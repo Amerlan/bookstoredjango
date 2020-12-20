@@ -17,10 +17,11 @@ class BookListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(BookListView, self).get_context_data(**kwargs)
-        order = Order.objects.get(customer=self.request.user.customer, complete=False)
         count = 0
-        for _ in OrderItem.objects.filter(order=order):
-            count += _.quantity
+        if self.request.user.is_authenticated:
+            order = Order.objects.get(customer=self.request.user.customer, complete=False)
+            for _ in OrderItem.objects.filter(order=order):
+                count += _.quantity
         context['order_count'] = count
         return context
 
@@ -33,20 +34,22 @@ class BookDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(BookDetailView, self).get_context_data(**kwargs)
-        order = Order.objects.get_or_create(customer=self.request.user.customer, complete=False)[0]
         count = 0
-        for _ in OrderItem.objects.filter(order=order):
-            count += _.quantity
+        if self.request.user.is_authenticated:
+            order = Order.objects.get_or_create(customer=self.request.user.customer, complete=False)[0]
+            for _ in OrderItem.objects.filter(order=order):
+                count += _.quantity
         context['order_count'] = count
         return context
 
 class IndexView(View):
     books = Book.objects.order_by('-id')[:9]
     def get(self, request):
-        order = Order.objects.get_or_create(customer=request.user.customer, complete=False)[0]
         count = 0
-        for _ in OrderItem.objects.filter(order=order):
-            count += _.quantity
+        if self.request.user.is_authenticated:
+            order = Order.objects.get_or_create(customer=request.user.customer, complete=False)[0]
+            for _ in OrderItem.objects.filter(order=order):
+                count += _.quantity
         return render(request, 'index.html', {'books': self.books, 'order_count': count})
 
 def updateCart(request):
@@ -57,7 +60,6 @@ def updateCart(request):
         qty = data['qty']
     else:
         qty = 1
-    print(qty)
     books = Book.objects.get(id=book_id)
     order = Order.objects.get_or_create(customer=request.user.customer, complete=False)[0]
     orderItem = OrderItem.objects.get_or_create(order=order, book=books)[0]
@@ -73,19 +75,22 @@ def updateCart(request):
 
 
 def get_cart(request):
-    order = Order.objects.get_or_create(customer=request.user.customer, complete=False)[0]
-    orderItems = OrderItem.objects.filter(order=order)
-    count = 0
-    total = 0
-    for _ in orderItems:
-        count += _.quantity
-        total += _.quantity * _.book.price
-    return {
-              'order': order,
-              'orderItems': orderItems,
-              'order_count': count,
-              'total': total
-              }
+    context = {}
+    if request.user.is_authenticated:
+        order = Order.objects.get_or_create(customer=request.user.customer, complete=False)[0]
+        orderItems = OrderItem.objects.filter(order=order)
+        count = 0
+        total = 0
+        for _ in orderItems:
+            count += _.quantity
+            total += _.quantity * _.book.price
+        context = {
+            'order': order,
+            'orderItems': orderItems,
+            'order_count': count,
+            'total': total
+        }
+    return context
 
 
 def show_cart(request):
@@ -94,14 +99,17 @@ def show_cart(request):
                   cart_details)
 
 def show_checkout(request):
-    order = get_cart(request)['order']
-    total = get_cart(request)['total']
-    qty = get_cart(request)['order_count']
-    return render(request, 'checkout.html', {
-        'order': order,
-        'total': total,
-        'order_count': qty
-    })
+    context = {}
+    if request.user.is_authenticated:
+        order = get_cart(request)['order']
+        total = get_cart(request)['total']
+        qty = get_cart(request)['order_count']
+        context = {
+            'order': order,
+            'total': total,
+            'order_count': qty
+        }
+    return render(request, 'checkout.html', context)
 
 def checkout_order(request):
     data = request.POST
