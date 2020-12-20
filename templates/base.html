@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+{% include 'blocks/head.html' %}
+<body>
+<div class="main-content-wrapper d-flex clearfix">
+{% include 'blocks/body.html' %}
+    {% block content %}
+    {% endblock content %}
+</div>
+{% include 'blocks/footer.html' %}
+</body>
+</html>

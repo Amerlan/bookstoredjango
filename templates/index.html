@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+        <!-- Product Catagories Area Start -->
+        <div class="products-catagories-area clearfix">
+            <div class="amado-pro-catagory clearfix">
+
+                {% for book in books %}
+                <!-- Single Catagory -->
+                <div class="single-products-catagory clearfix">
+                    <a href="/shop">
+                        <img src="{% static 'img/bg-img/1.jpg' %}" alt="">
+                        <!-- Hover Content -->
+                        <div class="hover-content">
+                            <div class="line"></div>
+                            <p>{{ book.price }}</p>
+                            <h4>{{ book.title }}</h4>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+{% endblock content %}

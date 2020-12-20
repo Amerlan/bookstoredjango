@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+        <div class="cart-table-area section-padding-100">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12 col-lg-8">
+                        <div class="checkout_details_area mt-50 clearfix">
+
+                            <div class="cart-title">
+                                <h2>Checkout</h2>
+                            </div>
+                            <form id="order_form" action="{% url 'process' %}" method="post">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <input type="text" name="name" class="form-control req" id="first_name" value="" placeholder="First Name" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <input type="text" name="lastname" class="form-control req" id="last_name" value="" placeholder="Last Name" required>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <input type="email" name="email" class="form-control req" id="email" placeholder="{{ request.user.customer.email }}" value="{{ request.user.customer.email }}">
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <input type="text" name="address" class="form-control mb-3 req" id="street_address" placeholder="Address" value="">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <input type="text" name="zipcode" class="form-control req" id="zipCode" placeholder="Zip Code" value="">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <input type="text" name="number" class="form-control req" id="phone_number" placeholder="Phone No" value="">
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        <textarea name="comment" class="form-control w-100" id="comment" cols="30" rows="10" placeholder="Leave a comment about your order"></textarea>
+                                    </div>
+                                     <input id='sbm' type="submit" hidden="true">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-4">
+                        <div class="cart-summary">
+                            <h5>Cart Total</h5>
+                            <ul class="summary-table">
+                                <li><span>total:</span> <span>${{ total }}</span></li>
+                            </ul>
+                            <div class="cart-btn mt-100">
+                                <a id="submit" href="#" class="btn amado-btn w-100">Checkout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <script>
+    var req = document.getElementsByClassName('req')
+    var submit_btn = document.getElementById('sbm')
+    var send_btn = document.getElementById('submit')
+
+    function validate_form(){
+        for (var i = 0; i< req.length; i++){
+            if (req[i].value == ""){
+                return 0
+            }
+        }
+        return 1
+    }
+
+
+    send_btn.addEventListener('click', function (){
+        if (validate_form()){
+            swal("Thank You!", "Your order is confirmed!", "success")
+            setTimeout(function(){
+                submit_btn.click()
+            }, 1500)
+        }
+        else{
+            swal("Oops!", "Not fields are filled!", "warning")
+        }
+
+    })
+    </script>
+{% endblock content %}
