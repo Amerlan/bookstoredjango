@@ -25,7 +25,7 @@ SECRET_KEY = 't1sxytm=%vd^a(u^0_fva9x4a7+ufo-&avlbj=7ba3uhw@nyh8'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['amerlandjangostore.herokuapp.com']
 
 
 # Application definition
